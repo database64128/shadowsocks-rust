@@ -9,12 +9,10 @@ use trust_dns_resolver::{
 };
 
 /// Create a `trust-dns` asynchronous DNS resolver
-pub async fn create_resolver(dns: Option<ResolverConfig>, ipv6_first: bool) -> ResolveResult<TokioAsyncResolver> {
+pub async fn create_resolver(dns: Option<ResolverConfig>, _ipv6_first: bool) -> ResolveResult<TokioAsyncResolver> {
     let mut resolver_opts = ResolverOpts::default();
 
-    if ipv6_first {
-        resolver_opts.ip_strategy = LookupIpStrategy::Ipv6thenIpv4;
-    }
+    resolver_opts.ip_strategy = LookupIpStrategy::Ipv4AndIpv6;
 
     // Customized dns resolution
     match dns {
@@ -49,9 +47,7 @@ pub async fn create_resolver(dns: Option<ResolverConfig>, ipv6_first: bool) -> R
                     // NOTE: timeout will be set by config (for example, /etc/resolv.conf on UNIX-like system)
                     //
                     // Only ip_strategy should be changed
-                    if ipv6_first {
-                        opts.ip_strategy = LookupIpStrategy::Ipv6thenIpv4;
-                    }
+                    opts.ip_strategy = LookupIpStrategy::Ipv4AndIpv6;
 
                     trace!(
                         "initializing DNS resolver with system-config {:?} opts {:?}",
